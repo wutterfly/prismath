@@ -378,6 +378,41 @@ mod scalar_assign {
     }
 }
 
+mod neg {
+    use super::Vec2;
+    use std::ops::Neg;
+
+    impl<T: Neg<Output = T>> Neg for &Vec2<T>
+    where
+        for<'a> T: Copy + Neg<Output = T>,
+    {
+        type Output = Vec2<T>;
+
+        #[inline]
+        fn neg(self) -> Self::Output {
+            Vec2 {
+                x: -self.x,
+                y: -self.y,
+            }
+        }
+    }
+
+    impl<T: Neg<Output = T>> Neg for Vec2<T>
+    where
+        T: Neg<Output = T>,
+    {
+        type Output = Self;
+
+        #[inline]
+        fn neg(self) -> Self::Output {
+            Vec2 {
+                x: -self.x,
+                y: -self.y,
+            }
+        }
+    }
+}
+
 impl Vec2<f32> {
     #[inline]
     #[must_use]

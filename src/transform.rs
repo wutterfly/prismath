@@ -33,7 +33,7 @@ impl Transform {
     #[inline]
     #[must_use]
     pub fn as_mat4(&self) -> Mat4<f32> {
-        let mat = self.rotation.rotation_matrix(&Vec3::zero());
+        let mat = self.rotation.to_rotation_matrix4();
         let pos = self.position_matrix();
 
         mat.multiply(&pos)
