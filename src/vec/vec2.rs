@@ -137,7 +137,7 @@ mod add {
 mod add_assign {
     use super::Vec2;
     use core::ops::Add;
-    use std::ops::AddAssign;
+    use core::ops::AddAssign;
 
     impl<T> Vec2<T>
     where
@@ -233,7 +233,7 @@ mod sub {
 mod sub_assign {
     use super::Vec2;
     use core::ops::Sub;
-    use std::ops::SubAssign;
+    use core::ops::SubAssign;
 
     impl<T> Vec2<T>
     where
@@ -346,7 +346,7 @@ mod scalar {
 mod scalar_assign {
     use super::Vec2;
     use core::ops::Mul;
-    use std::ops::MulAssign;
+    use core::ops::MulAssign;
 
     impl<T> Vec2<T>
     where
@@ -380,9 +380,9 @@ mod scalar_assign {
 
 mod neg {
     use super::Vec2;
-    use std::ops::Neg;
+    use core::ops::Neg;
 
-    impl<T: Neg<Output = T>> Neg for &Vec2<T>
+    impl<T> Neg for &Vec2<T>
     where
         for<'a> T: Copy + Neg<Output = T>,
     {
@@ -397,7 +397,7 @@ mod neg {
         }
     }
 
-    impl<T: Neg<Output = T>> Neg for Vec2<T>
+    impl<T> Neg for Vec2<T>
     where
         T: Neg<Output = T>,
     {
@@ -405,7 +405,7 @@ mod neg {
 
         #[inline]
         fn neg(self) -> Self::Output {
-            Vec2 {
+            Self {
                 x: -self.x,
                 y: -self.y,
             }
@@ -491,7 +491,7 @@ impl Vec2<f32> {
 
     #[inline]
     #[must_use]
-    pub const fn as_bytes(&self) -> [u8; std::mem::size_of::<Self>()] {
+    pub const fn as_bytes(&self) -> [u8; core::mem::size_of::<Self>()] {
         let [x1, x2, x3, x4] = self.x.to_ne_bytes();
         let [y1, y2, y3, y4] = self.y.to_ne_bytes();
 

@@ -2,10 +2,10 @@ use crate::traits;
 
 pub fn round_to_nearest<N>(input: N, multiple: N) -> N
 where
-    N: std::ops::Add<Output = N>
-        + std::ops::Sub<Output = N>
-        + std::ops::BitAnd<Output = N>
-        + std::ops::Not<Output = N>
+    N: core::ops::Add<Output = N>
+        + core::ops::Sub<Output = N>
+        + core::ops::BitAnd<Output = N>
+        + core::ops::Not<Output = N>
         + traits::PositiveNumber
         + Copy,
 {

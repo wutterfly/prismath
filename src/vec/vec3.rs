@@ -161,7 +161,7 @@ mod add {
 mod add_assign {
     use super::Vec3;
     use core::ops::Add;
-    use std::ops::AddAssign;
+    use core::ops::AddAssign;
 
     impl<T> Vec3<T>
     where
@@ -260,7 +260,7 @@ mod sub {
 mod sub_assign {
     use super::Vec3;
     use core::ops::Sub;
-    use std::ops::SubAssign;
+    use core::ops::SubAssign;
 
     impl<T> Vec3<T>
     where
@@ -293,7 +293,7 @@ mod sub_assign {
     }
 }
 
-mod scalar {
+mod scalar_mul {
     use super::Vec3;
     use core::ops::Mul;
 
@@ -302,7 +302,7 @@ mod scalar {
         for<'a> T: Copy + Mul<&'a T, Output = T>,
     {
         #[inline]
-        fn scalar(&self, scalar: &T) -> Self {
+        fn scalar_mul(&self, scalar: &T) -> Self {
             Self {
                 x: self.x * scalar,
                 y: self.y * scalar,
@@ -318,7 +318,7 @@ mod scalar {
         type Output = Self;
 
         fn mul(self, rhs: T) -> Self::Output {
-            self.scalar(&rhs)
+            self.scalar_mul(&rhs)
         }
     }
 
@@ -329,7 +329,7 @@ mod scalar {
         type Output = Vec3<T>;
 
         fn mul(self, rhs: T) -> Self::Output {
-            self.scalar(&rhs)
+            self.scalar_mul(&rhs)
         }
     }
 
@@ -340,7 +340,7 @@ mod scalar {
         type Output = Vec3<T>;
 
         fn mul(self, rhs: &T) -> Self::Output {
-            self.scalar(rhs)
+            self.scalar_mul(rhs)
         }
     }
 
@@ -351,7 +351,7 @@ mod scalar {
         type Output = Self;
 
         fn mul(self, rhs: &T) -> Self::Output {
-            self.scalar(rhs)
+            self.scalar_mul(rhs)
         }
     }
 
@@ -359,7 +359,15 @@ mod scalar {
         type Output = Vec3<Self>;
 
         fn mul(self, rhs: Vec3<Self>) -> Self::Output {
-            rhs.scalar(&self)
+            rhs.scalar_mul(&self)
+        }
+    }
+
+    impl Mul<&Vec3<Self>> for f32 {
+        type Output = Vec3<Self>;
+
+        fn mul(self, rhs: &Vec3<Self>) -> Self::Output {
+            rhs.scalar_mul(&self)
         }
     }
 
@@ -367,7 +375,94 @@ mod scalar {
         type Output = Vec3<Self>;
 
         fn mul(self, rhs: Vec3<Self>) -> Self::Output {
-            rhs.scalar(&self)
+            rhs.scalar_mul(&self)
+        }
+    }
+}
+
+mod scalar_div {
+    use super::Vec3;
+    use core::ops::Div;
+
+    impl<T> Vec3<T>
+    where
+        for<'a> T: Copy + Div<&'a T, Output = T>,
+    {
+        #[inline]
+        fn scalar_div(&self, scalar: &T) -> Self {
+            Self {
+                x: self.x / scalar,
+                y: self.y / scalar,
+                z: self.z / scalar,
+            }
+        }
+    }
+
+    impl<T> Div<T> for Vec3<T>
+    where
+        for<'a> T: Copy + Div<&'a T, Output = T>,
+    {
+        type Output = Self;
+
+        fn div(self, rhs: T) -> Self::Output {
+            self.scalar_div(&rhs)
+        }
+    }
+
+    impl<T> Div<T> for &Vec3<T>
+    where
+        for<'a> T: Copy + Div<&'a T, Output = T>,
+    {
+        type Output = Vec3<T>;
+
+        fn div(self, rhs: T) -> Self::Output {
+            self.scalar_div(&rhs)
+        }
+    }
+
+    impl<T> Div<&T> for &Vec3<T>
+    where
+        for<'a> T: Copy + Div<&'a T, Output = T>,
+    {
+        type Output = Vec3<T>;
+
+        fn div(self, rhs: &T) -> Self::Output {
+            self.scalar_div(rhs)
+        }
+    }
+
+    impl<T> Div<&T> for Vec3<T>
+    where
+        for<'a> T: Copy + Div<&'a T, Output = T>,
+    {
+        type Output = Self;
+
+        fn div(self, rhs: &T) -> Self::Output {
+            self.scalar_div(rhs)
+        }
+    }
+
+    impl Div<Vec3<Self>> for f32 {
+        type Output = Vec3<Self>;
+
+        fn div(self, rhs: Vec3<Self>) -> Self::Output {
+            rhs.scalar_div(&self)
+        }
+    }
+
+    impl Div<&Vec3<Self>> for f32 {
+        type Output = Vec3<Self>;
+
+        fn div(self, rhs: &Vec3<Self>) -> Self::Output {
+            rhs.scalar_div(&self)
+        }
+    }
+
+    impl Div<Vec3<Self>> for u32 {
+        type Output = Vec3<Self>;
+
+        fn div(self, rhs: Vec3<Self>) -> Self::Output {
+            rhs.scalar_div(&self)
         }
     }
 }
@@ -375,7 +470,7 @@ mod scalar {
 mod scalar_assign {
     use super::Vec3;
     use core::ops::Mul;
-    use std::ops::MulAssign;
+    use core::ops::MulAssign;
 
     impl<T> Vec3<T>
     where
@@ -410,9 +505,9 @@ mod scalar_assign {
 
 mod neg {
     use super::Vec3;
-    use std::ops::Neg;
+    use core::ops::Neg;
 
-    impl<T: Neg<Output = T>> Neg for &Vec3<T>
+    impl<T> Neg for &Vec3<T>
     where
         for<'a> T: Copy + Neg<Output = T>,
     {
@@ -428,7 +523,7 @@ mod neg {
         }
     }
 
-    impl<T: Neg<Output = T>> Neg for Vec3<T>
+    impl<T> Neg for Vec3<T>
     where
         T: Neg<Output = T>,
     {
@@ -436,7 +531,7 @@ mod neg {
 
         #[inline]
         fn neg(self) -> Self::Output {
-            Vec3 {
+            Self {
                 x: -self.x,
                 y: -self.y,
                 z: -self.z,
@@ -532,7 +627,7 @@ impl Vec3<f32> {
     #[inline]
     #[must_use]
     pub fn distance(&self, rhs: &Self) -> f32 {
-        (self - rhs).lenght()
+        (self - rhs).length()
     }
 
     #[inline]
@@ -555,7 +650,7 @@ impl Vec3<f32> {
 
     #[inline]
     #[must_use]
-    pub fn lenght_scale(&self) -> f32 {
+    pub fn length_scale(&self) -> f32 {
         // self.z * self.z + self.x * self.x + self.y * self.y
         self.z
             .mul_add(self.z, self.x.mul_add(self.x, self.y * self.y))
@@ -563,14 +658,14 @@ impl Vec3<f32> {
 
     #[inline]
     #[must_use]
-    pub fn lenght(&self) -> f32 {
-        self.lenght_scale().sqrt()
+    pub fn length(&self) -> f32 {
+        self.length_scale().sqrt()
     }
 
     #[inline]
     #[must_use]
     pub fn normalized(&self) -> Self {
-        let len = self.lenght();
+        let len = self.length();
         Self {
             x: self.x / len,
             y: self.y / len,
@@ -585,7 +680,7 @@ impl Vec3<f32> {
 
     #[inline]
     #[must_use]
-    pub const fn as_bytes(&self) -> [u8; std::mem::size_of::<Self>()] {
+    pub const fn as_bytes(&self) -> [u8; core::mem::size_of::<Self>()] {
         let [x1, x2, x3, x4] = self.x.to_ne_bytes();
         let [y1, y2, y3, y4] = self.y.to_ne_bytes();
         let [z1, z2, z3, z4] = self.z.to_ne_bytes();

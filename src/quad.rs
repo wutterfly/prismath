@@ -1,4 +1,4 @@
-use std::f32::consts::PI;
+use core::f32::consts::PI;
 
 const SLERP_THRESHHOLD: f32 = 0.9995;
 
@@ -178,18 +178,18 @@ impl Quat<f32> {
 
         let r1 = [
             q0_2 + q1_2 - q2_2 - q3_2,
-            2. * q1q2 - 2. * q0q3,
-            2. * q1q3 + 2. * q0q2,
+            2.0f32.mul_add(q1q2, -(2. * q0q3)),
+            2.0f32.mul_add(q1q3, 2. * q0q2),
         ];
         let r2 = [
-            2. * q1q2 + q0q3,
-            1. - 2. * q1_2 - 2. * q3_2,
-            2. * q2q3 - 2. * q0q1,
+            2.0f32.mul_add(q1q2, q0q3),
+            2.0f32.mul_add(-q3_2, 2.0f32.mul_add(-q1_2, 1.)),
+            2.0f32.mul_add(q2q3, -(2. * q0q1)),
         ];
         let r3 = [
-            2. * q1q3 - 2. * q0q2,
-            2. * q2q3 + 2. * q0q1,
-            1. - 2. * q1_2 - 2. * q2_2,
+            2.0f32.mul_add(q1q3, -(2. * q0q2)),
+            2.0f32.mul_add(q2q3, 2. * q0q1),
+            2.0f32.mul_add(-q2_2, 2.0f32.mul_add(-q1_2, 1.)),
         ];
 
         Mat3::from_array([r1, r2, r3])
@@ -312,10 +312,10 @@ impl Quat<f32> {
         let cy = f32::cos(yh);
         let sy = f32::sin(yh);
 
-        let q0 = cr * cp * cy + sr * sp * sy;
-        let q1 = sr * cp * cy - cr * sp * sy;
-        let q2 = cr * sp * cy + sr * cp * sy;
-        let q3 = cr * cp * sy - sr * sp * cy;
+        let q0 = (cr * cp).mul_add(cy, sr * sp * sy);
+        let q1 = (sr * cp).mul_add(cy, -(cr * sp * sy));
+        let q2 = (cr * sp).mul_add(cy, sr * cp * sy);
+        let q3 = (cr * cp).mul_add(sy, -(sr * sp * cy));
 
         Self::new(q0, (q1, q2, q3))
     }
@@ -333,7 +333,7 @@ impl Quat<f32> {
         let q2_2 = q2 * q2;
         let q3_2 = q3 * q3;
 
-        let pitch = f32::asin(2. * (q0 * q2 - q1 * q3));
+        let pitch = f32::asin(2. * q0.mul_add(q2, -(q1 * q3)));
 
         // check for gimble lock
         // +90 degree
@@ -350,8 +350,8 @@ impl Quat<f32> {
         }
         // no gimble lock
         else {
-            let roll = f32::atan2(2. * (q0 * q1 + q2 * q3), q0_2 - q1_2 - q2_2 + q3_2);
-            let yaw = f32::atan2(2. * (q0 * q3 + q1 * q2), q0_2 + q1_2 - q2_2 - q3_2);
+            let roll = f32::atan2(2. * q0.mul_add(q1, q2 * q3), q0_2 - q1_2 - q2_2 + q3_2);
+            let yaw = f32::atan2(2. * q0.mul_add(q3, q1 * q2), q0_2 + q1_2 - q2_2 - q3_2);
 
             (roll.to_degrees(), pitch.to_degrees(), yaw.to_degrees())
         }
@@ -383,7 +383,7 @@ impl Quat<f32> {
     #[must_use]
     pub fn lenght(self) -> f32 {
         let (q0, q1, q2, q3) = self.parts();
-        f32::sqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3)
+        f32::sqrt(q3.mul_add(q3, q2.mul_add(q2, q0.mul_add(q0, q1 * q1))))
     }
 
     #[inline]
@@ -473,7 +473,7 @@ mod tests {
         assert_eq!(quad, Quat::new(0.9238795, (0.38268346, 0., 0.)));
 
         let (ax, an) = quad.to_axis_angle();
-        assert!((axis - ax).lenght() < 0.001);
+        assert!((axis - ax).length() < 0.001);
         assert!((angle - an).abs() < 0.001);
 
         //
@@ -485,7 +485,7 @@ mod tests {
         assert_eq!(quad, Quat::new(0.8660254, (0., 0.5, 0.)));
 
         let (ax, an) = quad.to_axis_angle();
-        assert!((axis - ax).lenght() < 0.001);
+        assert!((axis - ax).length() < 0.001);
         assert!((angle - an).abs() < 0.001);
 
         //
@@ -497,7 +497,7 @@ mod tests {
         assert_eq!(quad, Quat::new(0.4694716, (0., 0., 0.88294756)));
 
         let (ax, an) = quad.to_axis_angle();
-        assert!((axis - ax).lenght() < 0.001);
+        assert!((axis - ax).length() < 0.001);
         assert!((angle - an).abs() < 0.001);
     }
 
@@ -558,7 +558,7 @@ mod tests {
         let quad = Quat::from_euler_angles(10., 80., 45.);
         assert_eq!(
             quad,
-            Quat::new(0.7264786, (-0.18336517, 0.6171484, 0.24027885))
+            Quat::new(0.7264786, (-0.18336517, 0.6171484, 0.24027884))
         );
 
         let (u, v, w) = Quat::to_euler_angles(quad);

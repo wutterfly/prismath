@@ -56,13 +56,3 @@ impl Default for Transform {
         Self::new()
     }
 }
-
-#[test]
-fn test() {
-    let mut transform = Transform::new();
-    transform.position += Vec3::splat(2.0);
-    transform.scale = Vec3::splat(3.0);
-    let mat = transform.as_mat4();
-
-    println!("{mat:?}");
-}

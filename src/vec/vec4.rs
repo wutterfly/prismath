@@ -1,5 +1,7 @@
 use super::{Vec2, Vec3};
 
+use core::f32;
+
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct Vec4<T> {
     pub x: T,
@@ -177,7 +179,7 @@ mod add {
 mod add_assign {
     use super::Vec4;
     use core::ops::Add;
-    use std::ops::AddAssign;
+    use core::ops::AddAssign;
 
     impl<T> Vec4<T>
     where
@@ -278,7 +280,7 @@ mod sub {
 mod sub_assign {
     use super::Vec4;
     use core::ops::Sub;
-    use std::ops::SubAssign;
+    use core::ops::SubAssign;
 
     impl<T> Vec4<T>
     where
@@ -395,7 +397,7 @@ mod scalar {
 mod scalar_assign {
     use super::Vec4;
     use core::ops::Mul;
-    use std::ops::MulAssign;
+    use core::ops::MulAssign;
 
     impl<T> Vec4<T>
     where
@@ -431,9 +433,9 @@ mod scalar_assign {
 
 mod neg {
     use super::Vec4;
-    use std::ops::Neg;
+    use core::ops::Neg;
 
-    impl<T: Neg<Output = T>> Neg for &Vec4<T>
+    impl<T> Neg for &Vec4<T>
     where
         for<'a> T: Copy + Neg<Output = T>,
     {
@@ -450,7 +452,7 @@ mod neg {
         }
     }
 
-    impl<T: Neg<Output = T>> Neg for Vec4<T>
+    impl<T> Neg for Vec4<T>
     where
         T: Neg<Output = T>,
     {
@@ -458,7 +460,7 @@ mod neg {
 
         #[inline]
         fn neg(self) -> Self::Output {
-            Vec4 {
+            Self {
                 x: -self.x,
                 y: -self.y,
                 z: -self.z,
@@ -525,7 +527,7 @@ impl Vec4<f32> {
 
     #[inline]
     #[must_use]
-    pub const fn as_bytes(&self) -> [u8; std::mem::size_of::<Self>()] {
+    pub const fn as_bytes(&self) -> [u8; core::mem::size_of::<Self>()] {
         let [x1, x2, x3, x4] = self.x.to_ne_bytes();
         let [y1, y2, y3, y4] = self.y.to_ne_bytes();
         let [z1, z2, z3, z4] = self.z.to_ne_bytes();

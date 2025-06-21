@@ -2,5 +2,10 @@
 name = "prismath"
 version = "0.1.0"
 edition = "2024"
+categories = ["mathematics", "graphics", "computer-vision"]
+description = "A barebones linear-algebra math library with focus on graphics programming."
+keywords = ["math", "linear algebra", "geometry", "graphics"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/wutterfly/prismath"
 
 [dependencies]

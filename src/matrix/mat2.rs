@@ -55,8 +55,8 @@ impl<T: Clone> Mat2<T> {
     }
 }
 
-impl<T: std::fmt::Debug> std::fmt::Debug for Mat2<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl<T: core::fmt::Debug> core::fmt::Debug for Mat2<T> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let [a, b] = &self.0;
         f.write_fmt(format_args!("Mat2(\n{a:?}\n{b:?}\n)"))
     }
@@ -474,7 +474,7 @@ impl Mat2<f32> {
     #[inline]
     #[must_use]
     #[allow(clippy::similar_names)]
-    pub const fn as_bytes(&self) -> [u8; std::mem::size_of::<Self>()] {
+    pub const fn as_bytes(&self) -> [u8; core::mem::size_of::<Self>()] {
         let [a, b] = self.0;
 
         let [aa, ab] = a;
