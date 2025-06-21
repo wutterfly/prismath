@@ -1,3 +1,6 @@
+![workflow](https://github.com/wutterfly/prismath/actions/workflows/rust.yml/badge.svg)
+
+
 # Prismath
 
 
